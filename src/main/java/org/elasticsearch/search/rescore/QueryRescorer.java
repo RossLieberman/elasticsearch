@@ -95,6 +95,28 @@ public final class QueryRescorer implements Rescorer {
             public String toString() {
                 return "product";
             }
+        },
+        MultiplyBoost {
+            @Override
+            public float combine(float primary, float secondary) {
+                return primary * (secondary + 1);
+            }
+
+            @Override
+            public String toString() {
+                return "product";
+            }
+        },
+        Replace {
+            @Override
+            public float combine(float primary, float secondary) {
+                return secondary;
+            }
+
+            @Override
+            public String toString() {
+                return "replace";
+            }
         };
 
         public abstract float combine(float primary, float secondary);
@@ -196,6 +218,10 @@ public final class QueryRescorer implements Rescorer {
                         rescoreContext.setScoreMode(ScoreMode.Total);
                     } else if ("multiply".equals(sScoreMode)) {
                         rescoreContext.setScoreMode(ScoreMode.Multiply);
+                    } else if ("replace".equals(sScoreMode)) {
+                        rescoreContext.setScoreMode(ScoreMode.Replace);
+                    } else if ("multiplyBoost".equals(sScoreMode)) {
+                        rescoreContext.setScoreMode(ScoreMode.MultiplyBoost);
                     } else {
                         throw new ElasticsearchIllegalArgumentException("[rescore] illegal score_mode [" + sScoreMode + "]");
                     }
